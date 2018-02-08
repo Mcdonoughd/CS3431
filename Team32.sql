@@ -20,14 +20,14 @@ CREATE TABLE Employee(
 /*Room */
 CREATE TABLE Room(
 	Num INTEGER NOT NULL PRIMARY KEY,
-	Occupied CHAR(1),
-	CONSTRAINT CHK_Occupied CHECK (Occupied = 0 OR Occupied = 1)
+	Occupied CHAR(1) NOT NULL,
+	CONSTRAINT CHK_Occupied CHECK (Occupied = 0 OR Occupied = 1) /*UnOccupied = 0, Occupied = 1*/
 ); 
 
 /*Equipment */
 CREATE TABLE Equipment(
 	Serial# INTEGER NOT NULL PRIMARY KEY,
-	TypeID INTEGER NOT NULL UNIQUE,
+	TypeID INTEGER NOT NULL,
 	PurchaseYear DATE NOT NULL,
 	LastInspetion DATE,
 	RoomNum INTEGER NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE Equipment(
 /*EquipmentType */
 CREATE TABLE EquipmentType (
 	ID INTEGER NOT NULL PRIMARY KEY,
-	Description CHAR(20), /*Who needs instructions? - can be NULL*/
+	Description CHAR(20), /*Who needs Descriptions? - can be NULL*/
 	Model VARCHAR2(20) NOT NULL UNIQUE,
 	Instructions CHAR(500), /*Who needs instructions? - can be NULL*/
 	FOREIGN KEY (ID) REFERENCES Equipment(TypeID)
@@ -47,8 +47,8 @@ CREATE TABLE EquipmentType (
 
 /*RoomService */
 CREATE TABLE RoomService(
-	RoomNum INTEGER NOT NULL PRIMARY KEY,
-	Service CHAR(20) NOT NULL UNIQUE,
+	RoomNum INTEGER NOT NULL,
+	Service CHAR(20) NOT NULL,
 	FOREIGN KEY (RoomNum) REFERENCES Room(Num)
 );
 
@@ -110,10 +110,63 @@ CREATE TABLE StayIn(
 	FOREIGN KEY (AdmissionNum) REFERENCES Admission(ANum)
 );
 
-/*Begin Population!*/
+/*PHASE3: Begin Population!*/
+
+/*VALID Patients*/
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('012345678','Dan','Kmemes','12 FarAway ST.','1234567890');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('987654321','Tabal','Prince','100 Institute RD','5855675309');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('123456780','King','Philip','30 Yes ST.','0123456789');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('036666059','John','Tavis','10 NoWHERE Blv.','1236547890');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('988774328','John','Doe','12 FarAway ST.','9874560321');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('765890254','Sally','Smith','12 FarAway ST.','0101010101');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('678543760','Sarah','Pipsi','12 FarAway ST.','1111110000');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('123796540','Eron','Steel','12 FarAway ST.','1111111111');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('192847452','Tabal','Prince','12 FarAway ST.','3336666999');
+INSERT INTO Patient(SSN,FirstName,LastName) VALUES('000986132','Cave','Johnson');
+
+/*VALID DOCTORS*/
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1000','Patrick','Star','M','General');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1010','Santa','Clause','M','Stomach');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1020','Blake','Nelson','M','Brain');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1030','James','Paterson','M','General');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1040','Sarah','Burns','F','Leg');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1050','Joe','Shmoe','M','Hands');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1060','Kim','Possible','F','Heart');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1070','Jasmine','Lain','F','Hip');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1080','Ned','Stark','M','Head');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1090','Arya','Stark','F','Eyes');
+
+/*Rooms*/
+INSERT INTO Room(Num,Occupied) VALUES('101','0');
+INSERT INTO Room(Num,Occupied) VALUES('102','1');
+INSERT INTO Room(Num,Occupied) VALUES('105','0');
+INSERT INTO Room(Num,Occupied) VALUES('106','0');
+INSERT INTO Room(Num,Occupied) VALUES('103','1');
+INSERT INTO Room(Num,Occupied) VALUES('104','1');
+INSERT INTO Room(Num,Occupied) VALUES('108','0');
+INSERT INTO Room(Num,Occupied) VALUES('109','1');
+INSERT INTO Room(Num,Occupied) VALUES('107','0');
+INSERT INTO Room(Num,Occupied) VALUES('110','1');
+
+/*RoomService*/
+INSERT INTO RoomService(RoomNum,Service) VALUES('102','MRI');
+INSERT INTO RoomService(RoomNum,Service) VALUES('102','BloodTesting');
+INSERT INTO RoomService(RoomNum,Service) VALUES('102','CATScan');
+INSERT INTO RoomService(RoomNum,Service) VALUES('103','Cafeteria');
+INSERT INTO RoomService(RoomNum,Service) VALUES('103','Dining');
+INSERT INTO RoomService(RoomNum,Service) VALUES('103','Xray');
+INSERT INTO RoomService(RoomNum,Service) VALUES('104','CPR');
+INSERT INTO RoomService(RoomNum,Service) VALUES('104','MRI');
+
+/*Equipment*/
+INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES();
 
 
-
+/*Look inside the tables*/
+select * FROM Patient;
+select * FROM Doctor;
+select * FROM Room;
+select * FROM Equipment;
 
 
 
