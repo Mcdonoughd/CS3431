@@ -1,5 +1,6 @@
 /*Phase 2 By Daniel McDonough & Talal Jaber*/
 /*desc tablename : This allows you to see the status of a query*/
+
 /*Part 1 CREATE TABLE*/
 
 /*Employee*/
@@ -38,7 +39,8 @@ CREATE TABLE Equipment(
 	LastInspetion DATE,
 	RoomNum INTEGER NOT NULL,
 	FOREIGN KEY (RoomNum) REFERENCES Room(Num),
-	FOREIGN KEY (TypeID) REFERENCES EquipmentType(ID)
+	FOREIGN KEY (TypeID) REFERENCES EquipmentType(ID),
+	CONSTRAINT Ck_Equipment CHECK (LastInspetion >= PurchaseYear)
 );
 
 
@@ -87,8 +89,11 @@ CREATE TABLE Admission(
 	TotalPayment REAL NOT NULL,
 	InsurancePayment REAL, /*Assume patient can have null insurance*/
 	Patient_SSN VARCHAR2(11) NOT NULL,
-	FutureVisit Date /*Patient doesnt need to have a future visit*/
+	FutureVisit Date, /*Patient doesnt need to have a future visit*/
 	/*FOREIGN KEY (Patient_SSN) REFERENCES Patient(SSN)*/
+	CONSTRAINT Ck_Admission CHECK (AdmissionDate<=LeaveDate),
+	CONSTRAINT Ck_Future CHECK (LeaveDate<FutureVisit),
+	CONSTRAINT Ck_Payment CHECK (InsurancePayment<=TotalPayment)
 );
 
 /*Examine*/
@@ -111,6 +116,128 @@ CREATE TABLE StayIn(
 	FOREIGN KEY (RoomNum) REFERENCES Room(Num),
 	FOREIGN KEY (AdmissionNum) REFERENCES Admission(ANum)
 );
+
+/*PHASE3: Begin Population! We did Phase 2 last for testing */
+
+/*VALID Patients*/
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('012-34-5678','Dan','Kmemes','12 FarAway ST.','(123)-456-7890');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('123-45-6789','Tabal','Prince','100 Institute RD.','(585)-567-5309');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('123-45-6780','King','Philip','30 Yes ST.','(012)-345-6789');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('036-66-6059','John','Tavis','10 NoWHERE BLV.','(123)-654-7890');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('988-77-4328','John','Doe','12 FarAway ST.','(987)-456-0321');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('765-89-0254','Sally','Smith','12 FarAway ST.','(010)-101-0101');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('678-54-3760','Sarah','Pipsi','12 FarAway ST.','(111)-111-0000');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('123-79-6540','Eron','Steel','12 FarAway ST.','(111)-111-1111');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('192-847-452','Tabal','Prince','12 FarAway ST.','(333)-666-6999');
+INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('111-22-3333','Cave','Johnson','50 Jazz RD','(000)-000-0000');
+
+/*VALID DOCTORS*/
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1000','Patrick','Star','M','General');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1010','Santa','Clause','M','Stomach');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1020','Blake','Nelson','M','Brain');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1030','James','Paterson','M','General');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1040','Sarah','Burns','F','Leg');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1050','Joe','Shmoe','M','Hands');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1060','Kim','Possible','F','Heart');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1070','Jasmine','Lain','F','Hip');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1080','Ned','Stark','M','Head');
+INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1090','Arya','Stark','F','Eyes');
+
+/*Rooms*/
+INSERT INTO Room(Num,Occupied) VALUES('101','0');
+INSERT INTO Room(Num,Occupied) VALUES('102','1');
+INSERT INTO Room(Num,Occupied) VALUES('105','0');
+INSERT INTO Room(Num,Occupied) VALUES('106','0');
+INSERT INTO Room(Num,Occupied) VALUES('103','1');
+INSERT INTO Room(Num,Occupied) VALUES('104','1');
+INSERT INTO Room(Num,Occupied) VALUES('108','0');
+INSERT INTO Room(Num,Occupied) VALUES('109','1');
+INSERT INTO Room(Num,Occupied) VALUES('107','0');
+INSERT INTO Room(Num,Occupied) VALUES('110','1');
+
+/*RoomService*/
+INSERT INTO RoomService(RoomNum,Service) VALUES('102','MRI');
+INSERT INTO RoomService(RoomNum,Service) VALUES('102','BloodTesting');
+INSERT INTO RoomService(RoomNum,Service) VALUES('102','CATScan');
+INSERT INTO RoomService(RoomNum,Service) VALUES('103','Cafeteria');
+INSERT INTO RoomService(RoomNum,Service) VALUES('103','Dining');
+INSERT INTO RoomService(RoomNum,Service) VALUES('103','Xray');
+INSERT INTO RoomService(RoomNum,Service) VALUES('104','CPR');
+INSERT INTO RoomService(RoomNum,Service) VALUES('104','MRI');
+
+/*EquipmentType*/
+INSERT INTO EquipmentType(ID,Description,Model,Instructions) VALUES('3000','SUPER COOL','A','DO IT YOURSELF');
+INSERT INTO EquipmentType(ID,Description,Model,Instructions) VALUES('4000','AMAZING','B','CALL IKEA');
+INSERT INTO EquipmentType(ID,Description,Model,Instructions) VALUES('5000','KINDA GOOD','C','');
+ 
+
+/*Equipment*/
+INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('ABD123','3000',TO_DATE('2003', 'yyyy'),TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'101');
+INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('ABDC1234','3000',TO_DATE('2003', 'yyyy'),TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'105');
+INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('ABC123','3000',TO_DATE('2011', 'yyyy'),TO_DATE('2018/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'107');
+INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('XYZ789','4000',TO_DATE('2004', 'yyyy'),TO_DATE('2017/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'102');
+INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('XYZ000','4000',TO_DATE('2004', 'yyyy'),TO_DATE('2013/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'103');
+INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('XYZ999','4000',TO_DATE('2004', 'yyyy'),TO_DATE('2017/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'104');
+INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('JKL456','5000',TO_DATE('2010', 'yyyy'),TO_DATE('2017/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'109');
+INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('JKLQRS','5000',TO_DATE('2010', 'yyyy'),TO_DATE('2017/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'101');
+INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('555JKS','5000',TO_DATE('2005', 'yyyy'),TO_DATE('2018/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'109');
+INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('A01-02X','5000',TO_DATE('2005', 'yyyy'),TO_DATE('2018/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'109');
+
+
+/*Admission*/
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('1',TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','1000','123-45-6789',TO_DATE('2204/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('2',TO_DATE('2013/09/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2014/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2204/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('3',TO_DATE('2007/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2008/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2024/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('4',TO_DATE('2006/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2007/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2024/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('5',TO_DATE('2005/06/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2006/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2024/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('6',TO_DATE('2002/08/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2024/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('7',TO_DATE('2003/03/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2004/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2024/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('8',TO_DATE('2003/04/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2024/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('9',TO_DATE('2003/04/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','111-22-3333',TO_DATE('2024/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('10',TO_DATE('2003/02/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','500','111-22-3333',TO_DATE('2024/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('11',TO_DATE('2003/02/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','111-22-3333',TO_DATE('2024/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+
+/*Employee*/
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('600','Josh','Pickles','10.00','Regular Employee','101','0','700');
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('601','Surya','Leman','10.00','Regular Employee','102','0','700');
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('602','Kistan','Hilbert','10.00','Regular Employee','103','0','700');
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('603','Mansa','Yao','10.00','Regular Employee','104','0','701');
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('604','Ralph','Jones','10.00','Regular Employee','105','0','701');
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('605','Jen','Rulon','10.00','Regular Employee','106','0','701');
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('606','Josh','Conte','10.00','Regular Employee','107','0','702');
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('607','Anthony','Poreloo','10.00','Regular Employee','108','0','702');
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('608','Lily','Coie','10.00','Regular Employee','109','0','703');
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('609','Sam','Smith','10.00','Regular Employee','110','0','703');
+
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('700','Jona','Smos','12.00','Division Manager','111','1','800');
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('701','Kim','Pasta','12.00','Division Manager','112','1','800');
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('702','Tom','Brady','12.00','Division Manager','113','1','801');
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('703','Rose','Low','12.00','Division Manager','114','1','801');
+
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank) VALUES('800','Bill','Gates','15.00','General Manager','200','2');
+INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank) VALUES('801','Franca','Pheonix','15.00','General Manager','201','2');
+
+
+/*EXAMINE*/
+INSERT INTO Examine(DoctorID,AdmissionNum,Comments) VALUES('1000','9','Broken Leg');
+INSERT INTO Examine(DoctorID,AdmissionNum,Comments) VALUES('1000','10','Allergic to Meat');
+INSERT INTO Examine(DoctorID,AdmissionNum,Comments) VALUES('1000','11','Still Allergic to Meat');
+
+/*RoomAccess*/
+INSERT INTO RoomAccess(RoomNum,EmpID) VALUES('101','600');
+INSERT INTO RoomAccess(RoomNum,EmpID) VALUES('102','600');
+INSERT INTO RoomAccess(RoomNum,EmpID) VALUES('101','604');
+/*
+Look inside the tables 
+select * FROM Patient;
+select * FROM Doctor;
+select * FROM Room;
+select * FROM EquipmentType;
+select * FROM Equipment;
+select * FROM Admission;
+select * FROM Employee;
+*/
+
 
 /*Part 2: SQL Queries*/
  
@@ -138,7 +265,7 @@ Union
         From Admission));        
 
 /* 4: This query is to select patients' social security numbers, names, and number of visits */
-Select SSN, FirstName, LastName, Visits             /* 3. Addds back in patiens who have made visits with the right values */ 
+Select SSN, FirstName, LastName, Visits             /* 3. Adds back in patients who have made visits with the right values */ 
 From Patient NATURAL JOIN (                        
     Select Patient_SSN AS SSN, Count(*) AS Visits 
     From Admission 
@@ -208,117 +335,6 @@ Union
     (Select TypeID
     From Equipment
     Where PurchaseYear = TO_DATE('2011', 'yyyy'));
-
-/*PHASE3: Begin Population!*/
-
-/*VALID Patients*/
-INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('012-34-5678','Dan','Kmemes','12 FarAway ST.','(123)-456-7890');
-INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('123-45-6789','Tabal','Prince','100 Institute RD.','(585)-567-5309');
-INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('123-45-6780','King','Philip','30 Yes ST.','(012)-345-6789');
-INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('036-66-6059','John','Tavis','10 NoWHERE BLV.','(123)-654-7890');
-INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('988-77-4328','John','Doe','12 FarAway ST.','(987)-456-0321');
-INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('765-89-0254','Sally','Smith','12 FarAway ST.','(010)-101-0101');
-INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('678-54-3760','Sarah','Pipsi','12 FarAway ST.','(111)-111-0000');
-INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('123-79-6540','Eron','Steel','12 FarAway ST.','(111)-111-1111');
-INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('192-847-452','Tabal','Prince','12 FarAway ST.','(333)-666-6999');
-INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('000-98-6132','Cave','Johnson','50 Jazz RD','(000)-000-0000');
-
-/*VALID DOCTORS*/
-INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1000','Patrick','Star','M','General');
-INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1010','Santa','Clause','M','Stomach');
-INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1020','Blake','Nelson','M','Brain');
-INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1030','James','Paterson','M','General');
-INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1040','Sarah','Burns','F','Leg');
-INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1050','Joe','Shmoe','M','Hands');
-INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1060','Kim','Possible','F','Heart');
-INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1070','Jasmine','Lain','F','Hip');
-INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1080','Ned','Stark','M','Head');
-INSERT INTO Doctor(ID,FirstName,LastName,Gender,Specialty) VALUES('1090','Arya','Stark','F','Eyes');
-
-/*Rooms*/
-INSERT INTO Room(Num,Occupied) VALUES('101','0');
-INSERT INTO Room(Num,Occupied) VALUES('102','1');
-INSERT INTO Room(Num,Occupied) VALUES('105','0');
-INSERT INTO Room(Num,Occupied) VALUES('106','0');
-INSERT INTO Room(Num,Occupied) VALUES('103','1');
-INSERT INTO Room(Num,Occupied) VALUES('104','1');
-INSERT INTO Room(Num,Occupied) VALUES('108','0');
-INSERT INTO Room(Num,Occupied) VALUES('109','1');
-INSERT INTO Room(Num,Occupied) VALUES('107','0');
-INSERT INTO Room(Num,Occupied) VALUES('110','1');
-
-/*RoomService*/
-INSERT INTO RoomService(RoomNum,Service) VALUES('102','MRI');
-INSERT INTO RoomService(RoomNum,Service) VALUES('102','BloodTesting');
-INSERT INTO RoomService(RoomNum,Service) VALUES('102','CATScan');
-INSERT INTO RoomService(RoomNum,Service) VALUES('103','Cafeteria');
-INSERT INTO RoomService(RoomNum,Service) VALUES('103','Dining');
-INSERT INTO RoomService(RoomNum,Service) VALUES('103','Xray');
-INSERT INTO RoomService(RoomNum,Service) VALUES('104','CPR');
-INSERT INTO RoomService(RoomNum,Service) VALUES('104','MRI');
-
-/*EquipmentType*/
-INSERT INTO EquipmentType(ID,Description,Model,Instructions) VALUES('3000','SUPER COOL','A','DO IT YOURSELF');
-INSERT INTO EquipmentType(ID,Description,Model,Instructions) VALUES('4000','AMAZING','B','CALL IKEA');
-INSERT INTO EquipmentType(ID,Description,Model,Instructions) VALUES('5000','KINDA GOOD','C','');
- 
-
-/*Equipment*/
-INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('ABD123','3000',TO_DATE('2003', 'yyyy'),TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'101');
-INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('ABDC1234','3000',TO_DATE('2003', 'yyyy'),TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'105');
-INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('ABC123','3000',TO_DATE('2003', 'yyyy'),TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'107');
-INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('XYZ789','4000',TO_DATE('2004', 'yyyy'),TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'102');
-INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('XYZ000','4000',TO_DATE('2004', 'yyyy'),TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'103');
-INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('XYZ999','4000',TO_DATE('2004', 'yyyy'),TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'104');
-INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('JKL456','5000',TO_DATE('2005', 'yyyy'),TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'109');
-INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('JKLQRS','5000',TO_DATE('2005', 'yyyy'),TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'101');
-INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('555JKS','5000',TO_DATE('2005', 'yyyy'),TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'109');
-
-
-/*Admission*/
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('1',TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('2',TO_DATE('2013/09/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('3',TO_DATE('2007/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('4',TO_DATE('2006/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('5',TO_DATE('2005/06/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('6',TO_DATE('2002/08/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('7',TO_DATE('2003/03/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('8',TO_DATE('2003/04/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('9',TO_DATE('2003/04/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('10',TO_DATE('2003/02/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-
-/*Employee*/
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('600','Josh','Pickles','10.00','Regular Employee','101','0','700');
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('601','Surya','Leman','10.00','Regular Employee','102','0','700');
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('602','Kistan','Hilbert','10.00','Regular Employee','103','0','700');
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('603','Mansa','Yao','10.00','Regular Employee','104','0','701');
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('604','Ralph','Jones','10.00','Regular Employee','105','0','701');
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('605','Jen','Rulon','10.00','Regular Employee','106','0','701');
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('606','Josh','Conte','10.00','Regular Employee','107','0','702');
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('607','Anthony','Poreloo','10.00','Regular Employee','108','0','702');
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('608','Lily','Coie','10.00','Regular Employee','109','0','703');
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('609','Sam','Smith','10.00','Regular Employee','110','0','703');
-
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('700','Jona','Smos','12.00','Division Manager','111','1','800');
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('701','Kim','Pasta','12.00','Division Manager','112','1','800');
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('702','Tom','Brady','12.00','Division Manager','113','1','801');
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('703','Rose','Low','12.00','Division Manager','114','1','801');
-
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank) VALUES('800','Bill','Gates','15.00','General Manager','200','2');
-INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank) VALUES('801','Franca','Pheonix','15.00','General Manager','201','2');
-
-
-
-/*
-
-Look inside the tables */
-select * FROM Patient;
-select * FROM Doctor;
-select * FROM Room;
-select * FROM EquipmentType;
-select * FROM Equipment;
-select * FROM Admission;
-select * FROM Employee;
 
 
 /*DROP TABLES TO MAKE SURE EVERYTHING IS HUNKYDORY 
