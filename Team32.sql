@@ -112,6 +112,103 @@ CREATE TABLE StayIn(
 	FOREIGN KEY (AdmissionNum) REFERENCES Admission(ANum)
 );
 
+/*Part 2: SQL Queries*/
+ 
+/*1: This query is to select the room numbers of rooms that are currently occupied */
+Select Num 
+From Room 
+Where Occupied = 1;
+
+/* 2: This query is to select the ID, names, and salaries of regular employees that are supervised by a manager with a given ID */ 
+Select ID, FName, LName, Salary 
+From Employee 
+Where SupervisorID = 700 
+AND 
+JobTitle = 'Regular Employee';
+
+/* 3: This query is to select patients' social security numbers and sum of the amount paid by their insurance company for them */
+Select Patient_SSN, Sum(InsurancePayment) AS Total    /* 3. Adds back in patients who had an insurance company pay for them with the right total values */
+From Admission 
+Group By Patient_SSN      
+Union
+    (Select SSN AS Patient_SSN, 0 AS Total           /* 1. Reports all patients*/      
+    From Patient      
+    Minus 
+        (Select Patient_SSN, 0 AS Total              /* 2. Removes patients who have had an insurance company pay for them */ 
+        From Admission));        
+
+/* 4: This query is to select patients' social security numbers, names, and number of visits */
+Select SSN, FirstName, LastName, Visits             /* 3. Addds back in patiens who have made visits with the right values */ 
+From Patient NATURAL JOIN (                        
+    Select Patient_SSN AS SSN, Count(*) AS Visits 
+    From Admission 
+    Group By Patient_SSN)
+Union
+    (Select SSN, FirstName, LastName, 0 AS Visits  /* 1. Reports all patients*/
+    From Patient               
+    Minus
+        (Select SSN, FirstName, LastName, Visits   /* 2. Removes patients who have made visits */
+        From Patient NATURAL JOIN (     
+            Select Patient_SSN AS SSN, 0 AS Visits 
+            From Admission)));
+    
+/* 5: This query is to select room numbers of rooms with equipment units of the serial number 'A01-02X' */
+Select RoomNum 
+From Equipment 
+Where Serial# = 'A01-02X';
+
+/* 6: This query is to select the ID of employees who can acces the largest number of rooms */
+Select EmpID, Max(Rooms)
+From
+    (Select EmpID, Count(RoomNum) AS Rooms
+    From RoomAccess
+    Group By EmpID)
+Group By EmpID;
+
+/* 7: This query is to select the number of regular employees, division managers, and general managers in the hospital */
+Select JobTitle AS Type, Count(JobTitle) AS Count 
+From Employee 
+Group By JobTitle;
+
+/* 8: This query is to select the social security numbers, names, and visit dates of patients with future visits */
+Select SSN, FirstName, LastName, FutureVisit
+From Patient NATURAL JOIN (
+    Select Patient_SSN as SSN, FutureVisit
+    From Admission);
+
+/* 9: This query is to select the ID, models, and number of units of equipment typs with more than 3 units */
+Select ID, Model, Units
+From EquipmentType NATURAL JOIN (
+    Select TypeID AS ID, Count(*) as Units
+    From Equipment
+    Group By TypeID)    
+Where Units > 3;
+
+/* 10: This query selects the date of the coming future visit for the patent with the social security number of 111-22-3333 */
+Select Max(FutureVisit)
+From Admission
+Where Patient_SSN = '111-22-3333';
+
+/* 11: This query selects the ID of the doctors who have examined the patient with the social security number of 111-22-3333 more than twice */
+Select DoctorID
+From
+    (Select DoctorID, Count(AdmissionNum) as Examinations
+    From Examine NATURAL JOIN (
+        Select ANum AS AdmissionNum
+        From Admission
+        Where Patient_SSN = '111-22-3333')
+    Group By DoctorID)
+Where Examinations > 2;
+
+/* 12: This query is to select the ID of the equipment types for which units were purchased in both 2010 and 2011 */
+Select TypeID
+From Equipment
+Where PurchaseYear = TO_DATE('2010', 'yyyy')
+Union
+    (Select TypeID
+    From Equipment
+    Where PurchaseYear = TO_DATE('2011', 'yyyy'));
+
 /*PHASE3: Begin Population!*/
 
 /*VALID Patients*/
@@ -179,16 +276,16 @@ INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES(
 
 
 /*Admission*/
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('1',TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123456789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('2',TO_DATE('2013/09/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123456789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('3',TO_DATE('2007/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123456789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('4',TO_DATE('2006/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123456789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('5',TO_DATE('2005/06/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123456789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('6',TO_DATE('2002/08/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123456789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('7',TO_DATE('2003/03/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123456789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('8',TO_DATE('2003/04/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123456789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('9',TO_DATE('2003/04/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123456789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
-INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('10',TO_DATE('2003/02/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123456789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('1',TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('2',TO_DATE('2013/09/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('3',TO_DATE('2007/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('4',TO_DATE('2006/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('5',TO_DATE('2005/06/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('6',TO_DATE('2002/08/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('7',TO_DATE('2003/03/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('8',TO_DATE('2003/04/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('9',TO_DATE('2003/04/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO Admission(ANum,AdmissionDate,LeaveDate,TotalPayment,InsurancePayment,Patient_SSN,FutureVisit) VALUES('10',TO_DATE('2003/02/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'1000','0','123-45-6789',TO_DATE('2004/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
 
 /*Employee*/
 INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,SupervisorID) VALUES('600','Josh','Pickles','10.00','Regular Employee','101','0','700');
