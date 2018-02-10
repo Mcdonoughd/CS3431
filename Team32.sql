@@ -1,5 +1,22 @@
-/*Phase 2 By Daniel McDonough & Talal Jaber*/
+/*Phase 2 By Team 32 (Daniel McDonough & Talal Jaber)*/
 /*desc tablename : This allows you to see the status of a query*/
+
+/* Dropping Tables */
+DROP TABLE Employee CASCADE CONSTRAINTS;
+DROP TABLE Room CASCADE CONSTRAINTS;
+DROP TABLE Equipment CASCADE CONSTRAINTS;
+DROP TABLE EquipmentType CASCADE CONSTRAINTS;
+DROP TABLE RoomAccess CASCADE CONSTRAINTS;
+DROP TABLE RoomService CASCADE CONSTRAINTS;
+DROP TABLE Patient CASCADE CONSTRAINTS;
+DROP TABLE Doctor CASCADE CONSTRAINTS;
+DROP TABLE Admission CASCADE CONSTRAINTS;
+DROP TABLE Examine CASCADE CONSTRAINTS;
+DROP TABLE StayIn CASCADE CONSTRAINTS;
+
+
+
+
 
 /*Part 1 CREATE TABLE*/
 
@@ -8,9 +25,9 @@ CREATE TABLE Employee(
 	ID INTEGER NOT NULL PRIMARY KEY,
 	FName CHAR(20) NOT NULL,
 	LName CHAR(30) NOT NULL,
-	Salary REAL NOT NULL,
+	Salary REAL NOT NULL, /* Per Hour */
 	JobTitle CHAR(30) NOT NULL,
-	OfficeNum CHAR(30) NOT NULL UNIQUE, /*Assume: B16 is an office, Employees cannot share office space */
+	OfficeNum VARCHAR2(4) NOT NULL UNIQUE, /*Assume: B16 is an office, Employees cannot share office space */
 	EmpRank INTEGER NOT NULL, /* employee is regular (rank = 0), division manager (rank = 1), or general manager (rank = 2) */
 	SupervisorID INTEGER, /*General Managers don't have supervisors*/
 	CONSTRAINT CHK_EmpRank CHECK (EmpRank = 0 OR EmpRank = 1 OR EmpRank = 2)
