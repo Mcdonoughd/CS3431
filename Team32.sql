@@ -348,7 +348,7 @@ Where Examinations > 2;
 Select TypeID
 From Equipment
 Where PurchaseYear = TO_DATE('2010', 'yyyy')
-Union
+Intersect
     (Select TypeID
     From Equipment
     Where PurchaseYear = TO_DATE('2011', 'yyyy'));
