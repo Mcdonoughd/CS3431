@@ -136,7 +136,6 @@ DROP TABLE StayIn CASCADE CONSTRAINTS;
 
 /* PHASE 3 START* /
 
-
 /* Part 1: Views */
 
 CREATE VIEW CriticalCases AS 
@@ -170,9 +169,7 @@ CREATE VIEW DoctorsLoad AS
 
 
 Select *
-
 From CriticalCases
-
 Where numberOfAdmissionsToICU > 4;
 
 
