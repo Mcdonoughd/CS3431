@@ -1,7 +1,7 @@
 /*Phase 2 By Team 32 (Daniel McDonough & Talal Jaber)*/
 /*desc tablename : This allows you to see the status of a query*/
 
-/* Dropping Tables */
+/* Dropping Tables 
 DROP TABLE Employee CASCADE CONSTRAINTS;
 DROP TABLE Room CASCADE CONSTRAINTS;
 DROP TABLE Equipment CASCADE CONSTRAINTS;
@@ -13,7 +13,7 @@ DROP TABLE Doctor CASCADE CONSTRAINTS;
 DROP TABLE Admission CASCADE CONSTRAINTS;
 DROP TABLE Examine CASCADE CONSTRAINTS;
 DROP TABLE StayIn CASCADE CONSTRAINTS;
-
+*/
 
 
 
@@ -136,6 +136,8 @@ CREATE TABLE StayIn(
 
 /*PHASE3: Begin Population! We did Phase 2 last for testing */
 
+/*PHASE3: Begin Population! We did Phase 2 last for testing */
+
 /*VALID Patients*/
 INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('012-34-5678','Dan','Kmemes','12 FarAway ST.','(123)-456-7890');
 INSERT INTO Patient(SSN,FirstName,LastName,Address,TelNum) VALUES('123-45-6789','Tabal','Prince','100 Institute RD.','(585)-567-5309');
@@ -183,21 +185,21 @@ INSERT INTO RoomService(RoomNum,Service) VALUES('104','CPR');
 INSERT INTO RoomService(RoomNum,Service) VALUES('104','MRI');
 
 /*EquipmentType*/
-INSERT INTO EquipmentType(ID,Description,Model,Instructions) VALUES('3000','SUPER COOL','A','DO IT YOURSELF');
-INSERT INTO EquipmentType(ID,Description,Model,Instructions) VALUES('4000','AMAZING','B','CALL IKEA');
-INSERT INTO EquipmentType(ID,Description,Model,Instructions) VALUES('5000','KINDA GOOD','C','');
+INSERT INTO EquipmentType(ID,Description,ModelType,Instructions) VALUES('3000','SUPER COOL','A','DO IT YOURSELF');
+INSERT INTO EquipmentType(ID,Description,ModelType,Instructions) VALUES('4000','AMAZING','B','CALL IKEA');
+INSERT INTO EquipmentType(ID,Description,ModelType,Instructions) VALUES('5000','KINDA GOOD','C','');
  
 
 /*Equipment*/
 INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('ABD123','3000',TO_DATE('2003', 'yyyy'),TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'101');
 INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('ABDC1234','3000',TO_DATE('2003', 'yyyy'),TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'105');
 INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('ABC123','3000',TO_DATE('2011', 'yyyy'),TO_DATE('2018/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'107');
-INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('XYZ789','4000',TO_DATE('2004', 'yyyy'),TO_DATE('2017/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'102');
+INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('XYZ789','3000',TO_DATE('2010', 'yyyy'),TO_DATE('2017/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'102');
 INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('XYZ000','4000',TO_DATE('2004', 'yyyy'),TO_DATE('2013/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'103');
 INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('XYZ999','4000',TO_DATE('2004', 'yyyy'),TO_DATE('2017/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'104');
-INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('JKL456','5000',TO_DATE('2010', 'yyyy'),TO_DATE('2017/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'109');
+INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('JKL456','4000',TO_DATE('2010', 'yyyy'),TO_DATE('2017/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'109');
 INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('JKLQRS','5000',TO_DATE('2010', 'yyyy'),TO_DATE('2017/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'101');
-INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('555JKS','5000',TO_DATE('2005', 'yyyy'),TO_DATE('2018/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'109');
+INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('555JKS','5000',TO_DATE('2011', 'yyyy'),TO_DATE('2018/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'109');
 INSERT INTO Equipment(Serial#,TypeID,PurchaseYear,LastInspetion,RoomNum) VALUES('A01-02X','5000',TO_DATE('2005', 'yyyy'),TO_DATE('2018/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),'109');
 
 
@@ -234,16 +236,21 @@ INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank,Supervisor
 INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank) VALUES('800','Bill','Gates','15.00','General Manager','200','2');
 INSERT INTO Employee(ID,FName,LName,Salary,JobTitle,OfficeNum,EmpRank) VALUES('801','Franca','Pheonix','15.00','General Manager','201','2');
 
-
 /*EXAMINE*/
-INSERT INTO Examine(DoctorID,AdmissionNum,Comments) VALUES('1000','9','Broken Leg');
+INSERT INTO Examine(DoctorID,AdmissionNum,Comments) VALUES('1000','1','Broken Leg');
 INSERT INTO Examine(DoctorID,AdmissionNum,Comments) VALUES('1000','10','Allergic to Meat');
 INSERT INTO Examine(DoctorID,AdmissionNum,Comments) VALUES('1000','11','Still Allergic to Meat');
+INSERT INTO Examine(DoctorID,AdmissionNum,Comments) VALUES('1020','1','Broken Arm');
 
 /*RoomAccess*/
 INSERT INTO RoomAccess(RoomNum,EmpID) VALUES('101','600');
 INSERT INTO RoomAccess(RoomNum,EmpID) VALUES('102','600');
 INSERT INTO RoomAccess(RoomNum,EmpID) VALUES('101','604');
+
+/*STAY IN*/
+INSERT INTO StayIn(AdmissionNum,RoomNum,StartDate,EndDate ) VALUES ('1','101',TO_DATE('2003/05/04 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/05 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+INSERT INTO StayIn(AdmissionNum,RoomNum,StartDate,EndDate ) VALUES ('1','101',TO_DATE('2003/05/03 21:02:44', 'yyyy/mm/dd hh24:mi:ss'),TO_DATE('2003/05/04 21:02:44', 'yyyy/mm/dd hh24:mi:ss'));
+
 /*
 Look inside the tables 
 select * FROM Patient;
