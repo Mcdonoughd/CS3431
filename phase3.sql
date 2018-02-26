@@ -86,7 +86,7 @@ Begin
       Select count(Service) into serviceCount
 	  FROM RoomService
 	 WHERE RoomNum = :new.RoomNum;
-     IF serviceCount > 3  Then
+     IF serviceCount > 2  Then
 	 RAISE_APPLICATION_ERROR(-20004, 'A Room Cannot Have more than 3  Services');
 	 END IF;
 END; 
@@ -213,6 +213,7 @@ ON Equipment
 FOR EACH ROW
 WHEN (new.TypeID = 'MRI') 
 BEGIN
+SELECT FROM 
 IF (:new.PurchaseYear>TO_DATE('2005') OR :new.PurchaseYear=NULL) THEN
 RAISE_APPLICATION_ERROR(-300,'MRI Machine can not be purchased after 2005 or null');
 END IF;
@@ -237,6 +238,9 @@ AND A.Patient_SSN = :new.Patient_SSN;
 IF (FullName != NULL) THEN
 dbms_output.put_line('Doctor: '||FullName);
 END IF;
+EXCEPTION
+      WHEN NO_DATA_FOUND THEN
+        FullName := NULL;
 END;
 /
 Show errors;
