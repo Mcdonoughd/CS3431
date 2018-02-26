@@ -186,11 +186,17 @@ FOR EACH ROW
 DECLARE
 	RmType varchar2(30);
 BEGIN
-	SELECT R.Service INTO RmType
-FROM StayIn S,RoomService R,Admission A
-WHERE A.ANum=S.AdmissionNum
-AND S.RoomNum=R.RoomNum
-AND A.Patient_SSN = :new.Patient_SSN;
+	Select Service INTO RmType 
+    From Patient NATURAL JOIN ( 
+        Select Patient_SSN AS SSN, Service
+        From Admission NATURAL JOIN ( 
+            Select AdmissionNum AS ANum,Service  
+            From StayIn NATURAL JOIN ( 
+                Select RoomNum,Service 
+                From RoomService 
+                Where Service = 'ICU')) 
+        Group By Patient_SSN)
+		Where Patient_SSN = :new.Patient_SSN;
 IF(RmType='ICU')THEN
 :new.FutureVisit:= :new.AdmissionDate + INTERVAL '3' Month;
 END IF;
@@ -222,18 +228,18 @@ FOR EACH ROW
 DECLARE
 	FullName varchar2(40);
 BEGIN
-SELECT  CONCAT(D.FirstName, ', ', D.LastName) AS DocName INTO FullName
+SELECT CONCAT(D.FirstName, ', ', D.LastName) AS DocName INTO FullName
 FROM Doctor D,Examine E,Admission A
 WHERE A.ANum=E.AdmissionNum
 AND E.DoctorID = D.ID
 AND A.Patient_SSN = :new.Patient_SSN;
 IF (FullName != NULL) THEN
-
+dbms_output.put_line('Doctor: '||FullName);
 END IF;
 END;
 /
 Show errors;
-/*dbms_output.put_line('Doctor: '||FullName);*/
+/**/
 
 
 
