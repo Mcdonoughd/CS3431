@@ -91,7 +91,7 @@ Begin
 	 END IF;
 END; 
 /
-
+Show errors;
 
 /*The insurance payment should be calculated automatically as 70% of the total
 payment. If the total payment changes then the insurance amount should also
@@ -104,7 +104,7 @@ BEGIN
 :new.InsurancePayment := :new.TotalPayment * 0.70;
 END;
 /
-
+Show errors;
 /*Ensure that regular employees (with rank 0) must have their supervisors as
 division managers (with rank 1). Also each regular employee must have a
 supervisor at all times. */
@@ -123,7 +123,7 @@ BEGIN
 	END IF;
 END;
 /
-
+Show errors;
 
 /* Before you delete a supervisor check if they have employees*/
 CREATE OR REPLACE TRIGGER CHECKSUPERVISEE
@@ -140,7 +140,7 @@ BEGIN
 	END IF;
 END;
 /
-
+Show errors;
 /* Similarly, division managers (with rank 1) must have their supervisors as general
 managers (with rank 2). Division managers must have supervisors at all times.*/
 CREATE OR REPLACE TRIGGER CHECKGENMANAGERS
@@ -157,7 +157,7 @@ BEGIN
 	END IF;
 END;
 /
-
+Show errors;
 
 /* Before you delete a supervisor check if they have employees*/
 CREATE OR REPLACE TRIGGER CHECKDIVSUPERVISEE
@@ -174,7 +174,7 @@ BEGIN
 	END IF;
 END;
 /	
-
+Show errors;
 /* When a patient is admitted to ICU room on date D, the futureVisitDate should be
 automatically set to 3 months after that date, i.e., D + 3 months. The
 futureVisitDate may be manually changed later, but when the ICU admission
@@ -205,21 +205,24 @@ END;
 /
 Show errors;
 
-/* If an equipment of type ‘MRI’, then the purchase year must be not null and after
+/* If an equipment of description ‘MRI’, then the purchase year must be not null and after
 2005.*/
 CREATE OR REPLACE TRIGGER MRI2005CHECK
 BEFORE INSERT OR UPDATE 
 ON Equipment 
 FOR EACH ROW
-WHEN (new.TypeID = 'MRI') 
+DECLARE
+	EqType varchar2(20);
 BEGIN
-SELECT FROM 
-IF (:new.PurchaseYear>TO_DATE('2005') OR :new.PurchaseYear=NULL) THEN
+SELECT EquipmentType.Description INTO EqType FROM
+Equipment NATURAL JOIN EquipmentType
+Where Equipment.PurchaseYear > TO_DATE('2005');
+IF (eqType = 'MRI') THEN
 RAISE_APPLICATION_ERROR(-300,'MRI Machine can not be purchased after 2005 or null');
 END IF;
 END;
 /
-
+Show errors;
 /* When a patient is admitted to the hospital, i.e., a new record is inserted into the
 Admission table; the system should print out the names of the doctors who
 previously examined this patient (if any).*/
@@ -244,7 +247,7 @@ EXCEPTION
 END;
 /
 Show errors;
-/**/
+
 
 
 
