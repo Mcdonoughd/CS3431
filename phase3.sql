@@ -212,11 +212,11 @@ BEFORE INSERT OR UPDATE
 ON Equipment 
 FOR EACH ROW
 DECLARE
-	EqType varchar2(20);
+	EqType char(20);
 BEGIN
 SELECT EquipmentType.Description INTO EqType FROM
 Equipment NATURAL JOIN EquipmentType
-Where Equipment.PurchaseYear > TO_DATE('2005');
+Where Equipment.PurchaseYear > TO_DATE('2005', 'yyyy');
 IF (eqType = 'MRI') THEN
 RAISE_APPLICATION_ERROR(-300,'MRI Machine can not be purchased after 2005 or null');
 END IF;
