@@ -46,8 +46,7 @@ CREATE VIEW DoctorsLoad AS
             Group By DoctorID)
         Where Loadnum <= 10);
 
-CREATE VIEW 		
-		
+
 
 Select *
 From CriticalCases
@@ -180,13 +179,23 @@ futureVisitDate may be manually changed later, but when the ICU admission
 happens, the date should be set to default as mentioned above. */
 
 CREATE TRIGGER CHECKFutureVisit
-BEFORE INSERT ON Admission
+BEFORE INSERT 
+ON Admission
 FOR EACH ROW
+DECLARE
+	RmType varchar2(30);
 BEGIN
-	:new.FutureVisit := :new.AdmissionDate + INTERVAL '3' Month;
+	SELECT R.Service INTO RmType
+FROM StayIn S,RoomService R,Admission A
+WHERE A.ANum=S.AdmissionNum
+AND S.RoomNum=R.RoomNum
+AND A.Patient_SSN = :new.Patient_SSN;
+IF(RmType='ICU')THEN
+:new.FutureVisit:= :new.AdmissionDate + INTERVAL '3' Month;
+END IF;
 END;
 /
-
+Show errors;
 
 /* If an equipment of type ‘MRI’, then the purchase year must be not null and after
 2005.*/
@@ -207,24 +216,16 @@ END;
 Admission table; the system should print out the names of the doctors who
 previously examined this patient (if any).*/
 CREATE TRIGGER PREVDOC
-BEFORE INSERT 
+AFTER INSERT 
 ON Admission 
 FOR EACH ROW 
-DECLARE	
-	FNAME VARCHAR(20);
-	LNAME VARCHAR(20);
-BEGIN
-SELECT FirstName INTO FNAME
-FROM Doctor as D 
-Where D.ID = (SELECT DISTINCT DoctorID 
-FROM Examine as E 
-WHERE E.AdmissionNum = ( SELECT ANum 
-FROM Admission as A 
-WHERE A.Patient_SSN = :new.Patient_SSN));
-IF (FNAME != NULL AND LNAME != NULL) THEN
-RAISE_APPLICATION_ERROR(-300,'OH HI');
 
-END IF;
+BEGIN
+SELECT DISTINCT D.FirstName,D.LastName INTO TempDoc
+FROM Doctor D,Examine E,Admission A
+WHERE A.ANum=E.AdmissionNum
+AND E.DoctorID=D.ID
+AND A.Patient_SSN =:new.Patient_SSN;
 END;
 /
 Show errors;
