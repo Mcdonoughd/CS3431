@@ -81,7 +81,7 @@ CREATE OR REPLACE TRIGGER CheckRoomServiceCount
  ON RoomService
  FOR EACH ROW
  Declare 
-      serviceCount int;
+      serviceCount INTEGER := 0;
 Begin
       Select count(Service) into serviceCount
 	  FROM RoomService
