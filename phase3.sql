@@ -229,7 +229,7 @@ FOR EACH ROW
 DECLARE
 	FullName varchar2(40);
 BEGIN
-SELECT CONCAT(D.FirstName, ', ', D.LastName) AS DocName INTO FullName
+SELECT CONCAT(D.FirstName, D.LastName) AS DocName INTO FullName
 FROM Doctor D,Examine E,Admission A
 WHERE A.ANum=E.AdmissionNum
 AND E.DoctorID = D.ID
