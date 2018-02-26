@@ -79,12 +79,13 @@ Where C.Patient_SSN = A.Patient_SSN
 CREATE OR REPLACE TRIGGER CheckRoomServiceCount 
  BEFORE INSERT OR UPDATE 
  ON RoomService
+ FOR EACH ROW
  Declare 
       serviceCount int;
 Begin
       Select count(Service) into serviceCount
 	  FROM RoomService
-	  WHERE RoomNum = :new.RoomNum;
+	 WHERE RoomNum = :new.RoomNum;
      IF serviceCount > 3  Then
 	 RAISE_APPLICATION_ERROR(-20004, 'A Room Cannot Have more than 3  Services');
 	 END IF;
@@ -196,13 +197,13 @@ BEGIN
                 From RoomService 
                 Where Service = 'ICU')) 
         Group By Patient_SSN)
-		Where Patient_SSN = :new.Patient_SSN;
+		Where Admission.Patient_SSN = :new.Patient_SSN;
 IF(RmType='ICU')THEN
 :new.FutureVisit:= :new.AdmissionDate + INTERVAL '3' Month;
 END IF;
 END;
 /
-
+Show errors;
 
 /* If an equipment of type ‘MRI’, then the purchase year must be not null and after
 2005.*/
