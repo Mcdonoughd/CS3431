@@ -197,7 +197,7 @@ BEGIN
                 From RoomService 
                 Where Service = 'ICU')) 
         Group By Patient_SSN)
-		Where Admission.Patient_SSN = :new.Patient_SSN;
+		Where :old.Patient_SSN = :new.Patient_SSN;
 IF(RmType='ICU')THEN
 :new.FutureVisit:= :new.AdmissionDate + INTERVAL '3' Month;
 END IF;
